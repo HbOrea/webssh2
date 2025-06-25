@@ -53,6 +53,12 @@ exports.connect = function connect(req, res) {
     }
   }
 
+  // 支持从URL查询参数获取用户名和密码
+  if (req.method === 'GET' && req.query?.username && req.query?.userpassword) {
+    req.session.username = req.query.username;
+    req.session.userpassword = req.query.userpassword;
+  }
+
   if (req.method === 'POST' && req.body.username && req.body.userpassword) {
     req.session.username = req.body.username;
     req.session.userpassword = req.body.userpassword;

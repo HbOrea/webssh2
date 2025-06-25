@@ -42,7 +42,8 @@
   },
   "options": {
     "challengeButton": true,
-    "allowreauth": false
+    "allowreauth": false,
+    "allowUrlAuth": false
   },
   "algorithms": {
     "kex": [

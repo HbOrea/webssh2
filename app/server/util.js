@@ -4,6 +4,7 @@
 // private
 const debug = require('debug')('WebSSH2');
 const Auth = require('basic-auth');
+const config = require('./config');
 
 let defaultCredentials = { username: null, password: null, privatekey: null };
 
@@ -22,7 +23,13 @@ exports.basicAuth = function basicAuth(req, res, next) {
   // AND config.user.overridebasic is false, extract basic credentials
   // from client]
   const { username, password, privatekey, overridebasic } = defaultCredentials;
-  if (myAuth && myAuth.pass !== '' && !overridebasic) {
+  
+  // 支持从URL查询参数获取用户名和密码（仅在配置允许时）
+  if (config.options.allowUrlAuth && req.query?.username && req.query?.userpassword) {
+    req.session.username = req.query.username;
+    req.session.userpassword = req.query.userpassword;
+    debug(`URL params auth: username=${req.query.username} and password ${req.query.userpassword ? 'exists' : 'is blank'}`);
+  } else if (myAuth && myAuth.pass !== '' && !overridebasic) {
     req.session.username = myAuth.name;
     req.session.userpassword = myAuth.pass;
     debug(`myAuth.name: ${myAuth.name} and password ${myAuth.pass ? 'exists' : 'is blank'}`);

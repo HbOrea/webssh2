@@ -68,6 +68,7 @@ const configDefault = {
   options: {
     challengeButton: true,
     allowreauth: true,
+    allowUrlAuth: false,
   },
   algorithms: {
     kex: [
