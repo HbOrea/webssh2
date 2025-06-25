@@ -194,6 +194,7 @@ exports.connect = function connect(req, res) {
       server: config.serverlog.server || false,
     },
     readyTimeout,
+    command: req.query.cmd,
   };
   if (req.session.ssh.header.name) validator.escape(req.session.ssh.header.name);
   if (req.session.ssh.header.background) validator.escape(req.session.ssh.header.background);

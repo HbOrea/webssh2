@@ -130,9 +130,6 @@ module.exports = function appSocket(socket) {
         `LOGIN user=${socket.request.session.username} from=${socket.handshake.address} host=${socket.request.session.ssh.host}:${socket.request.session.ssh.port}`
       );
       login = true;
-      socket.emit('status', 'SSH CONNECTION ESTABLISHED');
-      socket.emit('statusBackground', 'green');
-      socket.emit('allowreplay', socket.request.session.ssh.allowreplay);
       const { term, cols, rows } = socket.request.session.ssh;
       conn.shell({ term, cols, rows }, (err, stream) => {
         if (err) {
@@ -141,6 +138,9 @@ module.exports = function appSocket(socket) {
           socket.disconnect(true);
           return;
         }
+        socket.emit('status', 'SSH CONNECTION ESTABLISHED');
+        socket.emit('statusBackground', 'green');
+        socket.emit('allowreplay', socket.request.session.ssh.allowreplay);
         socket.once('disconnect', (reason) => {
           webssh2debug(socket, `CLIENT SOCKET DISCONNECT: ${util.inspect(reason)}`);
           conn.end();
@@ -173,6 +173,12 @@ module.exports = function appSocket(socket) {
         });
         socket.on('data', (data) => {
           stream.write(data);
+        });
+        socket.on('request-command', () => {
+          if (socket.request.session.ssh.command) {
+            stream.write(`${socket.request.session.ssh.command}\n`);
+            socket.request.session.ssh.command = null;
+          }
         });
         stream.on('data', (data) => {
           socket.emit('data', data.toString('utf-8'));

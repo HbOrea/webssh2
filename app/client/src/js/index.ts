@@ -194,6 +194,9 @@ socket.on('menu', () => {
 
 socket.on('status', (data: string) => {
   status.innerHTML = data;
+  if (data === 'SSH CONNECTION ESTABLISHED') {
+    socket.emit('request-command');
+  }
 });
 
 socket.on('ssherror', (data: string) => {
